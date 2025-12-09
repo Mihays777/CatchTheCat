@@ -7,42 +7,42 @@
 static SDL_Window* window;
 static SDL_Renderer* renderer;
 
-// Текстуры
+// РўРµРєСЃС‚СѓСЂС‹
 SDL_Texture* cat_texture;
 SDL_Texture* cell_texture;
 SDL_Texture* closed_cell_texture;
 SDL_Texture* you_win_texture;
 SDL_Texture* game_over_texture;
-// Области для текстур
+// РћР±Р»Р°СЃС‚Рё РґР»СЏ С‚РµРєСЃС‚СѓСЂ
 SDL_FRect cat_rect;
 SDL_FRect cell_rect;
 SDL_FRect end_game_rect;
 
-// Длинна поля
+// Р”Р»РёРЅРЅР° РїРѕР»СЏ
 float field_length;
-// Размер клетки
+// Р Р°Р·РјРµСЂ РєР»РµС‚РєРё
 float cell_size;
-// Двумерный массив для хранения состояний клеток (открыта - true, закрыта - false)
+// Р”РІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёР№ РєР»РµС‚РѕРє (РѕС‚РєСЂС‹С‚Р° - true, Р·Р°РєСЂС‹С‚Р° - false)
 bool** cells_condition_array;
-// Двумерный массив для отслеживания кошки
+// Р”РІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ РєРѕС€РєРё
 bool** array_cat_tracking;
-// Отслеживание координат мышки
+// РћС‚СЃР»РµР¶РёРІР°РЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РјС‹С€РєРё
 float mouse_x;
 float mouse_y;
-// Массив для проверки возможности хода кошки
+// РњР°СЃСЃРёРІ РґР»СЏ РїСЂРѕРІРµСЂРєРё РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё С…РѕРґР° РєРѕС€РєРё
 bool array_move_possibilities[6];
-// Победа
+// РџРѕР±РµРґР°
 bool you_win;
-// Поражение
+// РџРѕСЂР°Р¶РµРЅРёРµ
 bool game_over;
-// Выбор хода
+// Р’С‹Р±РѕСЂ С…РѕРґР°
 int move;
-// Предыдущий ход
+// РџСЂРµРґС‹РґСѓС‰РёР№ С…РѕРґ
 int prev_move;
 
-// Функция для инициализация переменных
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРµСЂРµРјРµРЅРЅС‹С…
 void mapComplection() {
-	// Очистка двумерных массивов
+	// РћС‡РёСЃС‚РєР° РґРІСѓРјРµСЂРЅС‹С… РјР°СЃСЃРёРІРѕРІ
 	if (cells_condition_array) {
 		for (int i = 0; i < field_length; i++) delete[] cells_condition_array[i];
 		delete[] cells_condition_array;
@@ -51,7 +51,7 @@ void mapComplection() {
 		for (int i = 0; i < field_length; i++) delete[] array_cat_tracking[i];
 		delete[] array_cat_tracking;
 	}
-	// Обнуление указателей для безопасности
+	// РћР±РЅСѓР»РµРЅРёРµ СѓРєР°Р·Р°С‚РµР»РµР№ РґР»СЏ Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё
 	cells_condition_array = nullptr;
 	array_cat_tracking = nullptr;
 
@@ -78,7 +78,7 @@ void mapComplection() {
 	array_cat_tracking[int(field_length/2)][int(field_length/2)] = true;
 }
 
-// Функция для проверки массива на возможность хода кошки (true - есть ходы, false - нет ходов)
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё РјР°СЃСЃРёРІР° РЅР° РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ С…РѕРґР° РєРѕС€РєРё (true - РµСЃС‚СЊ С…РѕРґС‹, false - РЅРµС‚ С…РѕРґРѕРІ)
 bool checkArray() {
 	for (int i = 0; i < 6; i++) {
 		if (array_move_possibilities[i] == true) {
@@ -88,27 +88,27 @@ bool checkArray() {
 	return false;
 }
 
-// Функция для очищения массива проверки на возможность хода кошки
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РѕС‡РёС‰РµРЅРёСЏ РјР°СЃСЃРёРІР° РїСЂРѕРІРµСЂРєРё РЅР° РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ С…РѕРґР° РєРѕС€РєРё
 void clearArray() {
 	for (int i = 0; i < 6; i++) {
 		array_move_possibilities[i] = true;
 	}
 }
 
-// Функция для хода кошки
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ С…РѕРґР° РєРѕС€РєРё
 int catMove() {
 	int cat_i = -1;
 	int cat_j = -1;
-	// Поиск координат кошки
+	// РџРѕРёСЃРє РєРѕРѕСЂРґРёРЅР°С‚ РєРѕС€РєРё
 	for (int i = 0; i < field_length; i++) {
 		for (int j = 0; j < field_length; j++) {
 			if (array_cat_tracking[i][j] == true) {
-				// Запись координат кошки
+				// Р—Р°РїРёСЃСЊ РєРѕРѕСЂРґРёРЅР°С‚ РєРѕС€РєРё
 				cat_i = i;
 				cat_j = j;
-				// Проверка за выход массива
+				// РџСЂРѕРІРµСЂРєР° Р·Р° РІС‹С…РѕРґ РјР°СЃСЃРёРІР°
 				if (cat_i - 1 < 0 || cat_j - 1 < 0 || cat_i + 1 > field_length - 1 || cat_j + 1 > field_length - 1) return -1;
-				// Проверка возможных ходов
+				// РџСЂРѕРІРµСЂРєР° РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ
 				if (cells_condition_array[i + 1][j] == false) array_move_possibilities[1] = false;
 				if (cells_condition_array[i - 1][j] == false) array_move_possibilities[4] = false;
 				if (j % 2 == 0) {
@@ -127,7 +127,7 @@ int catMove() {
 			}
 		}
 	}
-	// Алгоритм выбора случайного хода
+	// РђР»РіРѕСЂРёС‚Рј РІС‹Р±РѕСЂР° СЃР»СѓС‡Р°Р№РЅРѕРіРѕ С…РѕРґР°
 	while (array_move_possibilities[move - 1] == false) {
 		prev_move = move;
 		move += (SDL_rand(2) * 2 - 1);
@@ -137,7 +137,7 @@ int catMove() {
 	if (array_move_possibilities[prev_move - 1] == true) {
 		move = prev_move;
 	}
-	// Алгоритм хода
+	// РђР»РіРѕСЂРёС‚Рј С…РѕРґР°
 	if (move == 1) {
 		if (cat_j % 2 == 0) {
 			array_cat_tracking[cat_i][cat_j] = false;
@@ -193,9 +193,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 	system("chcp 1251");
 	SDL_srand(SDL_GetTicks());
 	mapComplection();
-	// Создание окна приложения
+	// РЎРѕР·РґР°РЅРёРµ РѕРєРЅР° РїСЂРёР»РѕР¶РµРЅРёСЏ
 	SDL_CreateWindowAndRenderer("CatchTheCat", cell_size * field_length + cell_size / 2 + 20, cell_size * field_length - cell_size / 4 * field_length + 40, NULL, &window, &renderer);
-	// Инициализация текстур
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚РµРєСЃС‚СѓСЂ
 	cat_texture = IMG_LoadTexture(renderer, "cat.png");
 	cell_texture = IMG_LoadTexture(renderer, "cell.png");
 	closed_cell_texture = IMG_LoadTexture(renderer, "closed_cell.png");
@@ -206,7 +206,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
 SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 	switch (event->type) {
-	// Обновление координат при движении мышки
+	// РћР±РЅРѕРІР»РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РїСЂРё РґРІРёР¶РµРЅРёРё РјС‹С€РєРё
 	case SDL_EVENT_MOUSE_MOTION: {
 		mouse_x = event->motion.x;
 		mouse_y = event->motion.y;
@@ -215,7 +215,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 	case SDL_EVENT_MOUSE_BUTTON_DOWN: {
 		switch (event->button.button) {
 		case SDL_BUTTON_LEFT: {
-			// Перезапуск при завершении игры
+			// РџРµСЂРµР·Р°РїСѓСЃРє РїСЂРё Р·Р°РІРµСЂС€РµРЅРёРё РёРіСЂС‹
 			if (you_win == true) {
 				mapComplection();
 				return SDL_APP_CONTINUE;
@@ -232,7 +232,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 				for (int j = 0; j < field_length; j++) {
 					cell_rect = { cell_size * i + 10, cell_size * j - cell_size / 4 * j + 10, cell_size, cell_size };
 					if (j % 2 == 1) cell_rect.x += cell_size / 2;
-					// Поиск ближайшей нажатой клетки, так как тектуры накладываются друг на друга
+					// РџРѕРёСЃРє Р±Р»РёР¶Р°Р№С€РµР№ РЅР°Р¶Р°С‚РѕР№ РєР»РµС‚РєРё, С‚Р°Рє РєР°Рє С‚РµРєС‚СѓСЂС‹ РЅР°РєР»Р°РґС‹РІР°СЋС‚СЃСЏ РґСЂСѓРі РЅР° РґСЂСѓРіР°
 					if (mouse_x >= cell_rect.x && mouse_x <= cell_rect.x + cell_rect.w &&
 						mouse_y >= cell_rect.y && mouse_y <= cell_rect.y + cell_rect.h) {
 						if (closest_x + closest_y > abs(int(cell_size / 2 - (cell_rect.x + cell_rect.w - mouse_x))) + abs(int(cell_size / 2 - (cell_rect.y + cell_rect.h - mouse_y)))) {
@@ -244,7 +244,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 					}
 				}
 			}
-			// Обработка нажатой клетки
+			// РћР±СЂР°Р±РѕС‚РєР° РЅР°Р¶Р°С‚РѕР№ РєР»РµС‚РєРё
 			if (closest_i != -1 && closest_j != -1) {
 				if (array_cat_tracking[closest_i][closest_j] == false && cells_condition_array[closest_i][closest_j] == true) {
 					cells_condition_array[closest_i][closest_j] = false;
@@ -261,16 +261,16 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 	}
 	case SDL_EVENT_KEY_DOWN: {
 		switch (event->key.scancode) {
-		// Выход на esc
+		// Р’С‹С…РѕРґ РЅР° esc
 		case SDL_SCANCODE_ESCAPE:
 			return SDL_APP_SUCCESS;
-		// Перезапуск на enter
+		// РџРµСЂРµР·Р°РїСѓСЃРє РЅР° enter
 		case SDL_SCANCODE_RETURN:
 			mapComplection();
 		}
 		break;
 	}
-	// Выход на крестик
+	// Р’С‹С…РѕРґ РЅР° РєСЂРµСЃС‚РёРє
 	case SDL_EVENT_QUIT: {
 		return SDL_APP_SUCCESS;
 	}
@@ -279,29 +279,29 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 }
 
 SDL_AppResult SDL_AppIterate(void* appstate) {
-	// Заливка фона цветом
+	// Р—Р°Р»РёРІРєР° С„РѕРЅР° С†РІРµС‚РѕРј
 	SDL_SetRenderDrawColor(renderer, 20, 135, 15, 0);
 	SDL_RenderClear(renderer);
 
-	// Сборка карты
+	// РЎР±РѕСЂРєР° РєР°СЂС‚С‹
 	for (int i = 0; i < field_length; i++) {
 		for (int j = 0; j < field_length; j++) {
-			// Запись координат клетки
+			// Р—Р°РїРёСЃСЊ РєРѕРѕСЂРґРёРЅР°С‚ РєР»РµС‚РєРё
 			cell_rect = { cell_size * i + 10, cell_size * j - cell_size / 4 * j + 10, cell_size, cell_size };
 			if (j % 2 == 1) cell_rect.x += cell_size / 2;
-			// Прорисовка клетки по координатам
+			// РџСЂРѕСЂРёСЃРѕРІРєР° РєР»РµС‚РєРё РїРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°Рј
 			if (cells_condition_array[i][j] == true) SDL_RenderTexture(renderer, cell_texture, NULL, &cell_rect);
 			else SDL_RenderTexture(renderer, closed_cell_texture, NULL, &cell_rect);
-			// Запись координат кошки
+			// Р—Р°РїРёСЃСЊ РєРѕРѕСЂРґРёРЅР°С‚ РєРѕС€РєРё
 			if (array_cat_tracking[i][j] == true) {
 				cat_rect = cell_rect;
 				cat_rect.y -= cell_size / 4;
 			}
 		}
 	}
-	// Прорисовка кошки по координатам
+	// РџСЂРѕСЂРёСЃРѕРІРєР° РєРѕС€РєРё РїРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°Рј
 	SDL_RenderTexture(renderer, cat_texture, NULL, &cat_rect);
-	// Проверка на конец игры
+	// РџСЂРѕРІРµСЂРєР° РЅР° РєРѕРЅРµС† РёРіСЂС‹
 	if (you_win == true) {
 		SDL_RenderTexture(renderer, you_win_texture, NULL, &end_game_rect);
 	}
@@ -309,13 +309,13 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 		SDL_RenderTexture(renderer, game_over_texture, NULL, &end_game_rect);
 	}
 
-	// Вывод получившейся картинки
+	// Р’С‹РІРѕРґ РїРѕР»СѓС‡РёРІС€РµР№СЃСЏ РєР°СЂС‚РёРЅРєРё
 	SDL_RenderPresent(renderer);
 	return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result) {
-	// Удаление текстур
+	// РЈРґР°Р»РµРЅРёРµ С‚РµРєСЃС‚СѓСЂ
 	SDL_DestroyTexture(cat_texture);
 	SDL_DestroyTexture(cell_texture);
 	SDL_DestroyTexture(closed_cell_texture);
